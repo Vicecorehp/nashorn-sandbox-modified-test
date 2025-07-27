@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -74,5 +75,22 @@ public class DelightSandboxTest {
                     o.push('abc');
                 }""");
         sandbox.eval(compiledScript);
+    }
+
+    @Test
+    void test_custom_impl_filter() throws Exception {
+        var whiteList = List.of(Base64.class, String.class);
+        var customSandboxImpl = new CustomSandboxImpl();
+        customSandboxImpl.allow(whiteList);
+        customSandboxImpl.setMaxCPUTime(100); // 设置CPU时间限制为100毫秒
+        customSandboxImpl.setMaxMemory(50 * 1024); // 设置内存限制为50KB
+        customSandboxImpl.setExecutor(Executors.newSingleThreadExecutor());
+        var compiledScript = customSandboxImpl.compile(jsText);
+        sandbox.eval(compiledScript);
+    }
+
+    @Test
+    void test_replace_class() {
+
     }
 }

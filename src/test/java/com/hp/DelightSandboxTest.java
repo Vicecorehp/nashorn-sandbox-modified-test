@@ -1,5 +1,6 @@
 package com.hp;
 
+import com.hp.sandbox.CustomSandboxImpl;
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
 import delight.nashornsandbox.internal.NashornSandboxImpl;

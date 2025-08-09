@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hp.mapper.ScriptMapper">
+    <resultMap id="scriptResultMap" type="com.hp.entities.dto.ScriptDto">
+        <id property="id" column="id"/>
+        <result property="uuid" column="uuid"/>
+        <result property="code" column="code"/>
+        <result property="createdBy" column="createdBy"/>
+        <result property="createdTime" column="createdTime"/>
+        <result property="updatedTime" column="updatedTime"/>
+    </resultMap>
+
+    <update id="createTable">
+        CREATE TABLE IF NOT EXISTS t_script
+        (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid        TEXT NOT NULL,
+            code        TEXT,
+            createdBy   TEXT NOT NULL,
+            createdTime TEXT NOT NULL,
+            updatedTime TEXT NOT NULL
+        )
+    </update>
+
+    <insert id="insert" parameterType="com.hp.entities.dto.ScriptDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_script(id, uuid, code, createdBy, createdTime, updatedTime)
+        VALUES (#{id}, #{uuid}, #{code}, #{createdBy}, #{createdTime}, #{updatedTime})
+    </insert>
+
+    <update id="update" parameterType="com.hp.entities.dto.ScriptDto">
+        UPDATE t_script
+        SET code        = #{email},
+            createdBy   = #{age},
+            updatedTime = #{updatedTime}
+        WHERE uuid = #{uuid}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE
+        FROM t_script
+        WHERE uuid = #{uuid}
+    </delete>
+
+    <select id="selectByUuid" parameterType="String" resultType="com.hp.entities.dto.ScriptDto" resultMap="scriptResultMap">
+        SELECT uuid,
+               code,
+               createdBy,
+               createdTime,
+               updatedTime
+        FROM t_script
+        WHERE uuid = #{uuid}
+    </select>
+</mapper>

@@ -13,6 +13,7 @@ public class CustomSandboxImpl extends NashornSandboxImpl {
     public CustomSandboxImpl(ScriptEngine engine) {
         super(engine);
     }
+
     public void allow(List<Class<?>> classList) {
         classList.forEach(this::allow);
     }

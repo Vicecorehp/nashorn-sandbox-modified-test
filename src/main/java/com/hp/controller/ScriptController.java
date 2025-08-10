@@ -4,6 +4,7 @@ import com.hp.entities.dto.ScriptDto;
 import com.hp.entities.vo.ScriptVo;
 import com.hp.mapper.ScriptMapper;
 import delight.nashornsandbox.internal.NashornSandboxImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/script")
 public class ScriptController {
@@ -25,6 +27,7 @@ public class ScriptController {
     public String execute(@RequestBody ScriptVo scriptVo) throws Exception {
         String text = scriptVo.getCode();
         if (!StringUtils.hasLength(text)) {
+            log.error("bad script received");
             return "null or empty script is rejected";
         }
         System.out.println("text = \n" + text);

@@ -10,7 +10,7 @@ public class CustomClassFilter implements ClassFilter {
             Base64.class.getName(),
             Base64.getDecoder().getClass().getName(),
             String.class.getName()
-    ) ;
+    );
 
     @Override
     public boolean exposeToScripts(String className) {

@@ -6,8 +6,12 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ScriptMapper {
     int createTable();
+
     int insert(ScriptDto scriptDto);
+
     int update(ScriptDto user);
-    int delete(Integer uuid);
+
+    int delete(String uuid);
+
     ScriptDto selectByUuid(String uuid);
 }

@@ -37,13 +37,14 @@
         WHERE uuid = #{uuid}
     </update>
 
-    <delete id="delete" parameterType="int">
+    <delete id="delete" parameterType="String">
         DELETE
         FROM t_script
         WHERE uuid = #{uuid}
     </delete>
 
-    <select id="selectByUuid" parameterType="String" resultType="com.hp.entities.dto.ScriptDto" resultMap="scriptResultMap">
+    <select id="selectByUuid" parameterType="String" resultType="com.hp.entities.dto.ScriptDto"
+            resultMap="scriptResultMap">
         SELECT uuid,
                code,
                createdBy,

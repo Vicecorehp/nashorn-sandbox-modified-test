@@ -7,6 +7,8 @@ import delight.nashornsandbox.internal.NashornSandboxImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.script.Bindings;
+import javax.script.CompiledScript;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -91,7 +93,11 @@ public class DelightSandboxTest {
     }
 
     @Test
-    void test_replace_class() {
-
+    void test_execute_from_file() throws Exception {
+        sandboxImpl.allowLoadFunctions(true);
+        Bindings bindings = sandboxImpl.createBindings();
+        bindings.put("__COUNT__", 100);
+        CompiledScript compiledScript = sandboxImpl.compile("load('sum.js')");
+        compiledScript.eval();
     }
 }

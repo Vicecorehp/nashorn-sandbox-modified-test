@@ -27,6 +27,10 @@ classes:
   - java.net.http.HttpClient
   - java.net.http.HttpRequest
   - java.net.http.HttpResponse
+  - java.net.http.HttpResponse$BodyHandlers
+  - java.net.http.HttpResponse.BodyHandlers
+  - java.net.http.HttpRequest$BodyPublishers
+  - java.net.http.HttpRequest.BodyPublishers
   - java.time.LocalDate
   - java.time.LocalDateTime
   - java.time.LocalTime

@@ -2,6 +2,7 @@ package lake.moon;
 
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ class NashornPerformanceTest {
     private static final Logger log = LoggerFactory.getLogger(NashornPerformanceTest.class);
 
     @Test
+    @DisplayName("Nashorn 斐波那契性能：递归计算 fib(35)")
     void fib35() throws Exception {
         NashornSandbox sandbox = NashornSandboxes.create();
 
@@ -30,6 +32,7 @@ class NashornPerformanceTest {
     }
 
     @Test
+    @DisplayName("Nashorn 浮点循环性能：100 万次 sqrt 累加")
     void floatLoop() throws Exception {
         NashornSandbox sandbox = NashornSandboxes.create();
 

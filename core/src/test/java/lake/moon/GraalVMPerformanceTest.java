@@ -2,6 +2,7 @@ package lake.moon;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ class GraalVMPerformanceTest {
     private static final Logger log = LoggerFactory.getLogger(GraalVMPerformanceTest.class);
 
     @Test
+    @DisplayName("GraalVM 斐波那契性能：递归计算 fib(35)")
     void fib35() {
         try (Context context = Context.create("js")) {
             String script = """
@@ -30,6 +32,7 @@ class GraalVMPerformanceTest {
     }
 
     @Test
+    @DisplayName("GraalVM 浮点循环性能：100 万次 sqrt 累加")
     void floatLoop() {
         try (Context context = Context.create("js")) {
             String script = """

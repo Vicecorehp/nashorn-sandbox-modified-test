@@ -3,6 +3,7 @@ package lake.moon;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("白名单放行：Math.sqrt(625) 正确返回 25")
     void whitelistPasses() throws Exception {
         ScriptEngine engine = factory.createEngine();
         Object result = engine.eval("Java.type('java.lang.Math').sqrt(625);");
@@ -38,6 +40,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("白名单拦截：java.io.File 不可访问")
     void whitelistBlocks() {
         ScriptEngine engine = factory.createEngine();
         var ex = assertThrows(Exception.class,
@@ -46,6 +49,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("包前缀拦截：java.io 下所有类被拦截")
     void whitelistBlocksByPackage() {
         ScriptEngine engine = factory.createEngine();
         var ex = assertThrows(Exception.class,
@@ -54,6 +58,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("并发纯 JS 计算：100 个虚拟线程并行执行 sqrt")
     void concurrentEval() {
         int count = 100;
         var futures = new ArrayList<CompletableFuture<Object>>(count);
@@ -74,6 +79,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("并发 Java 互操作：50 个虚拟线程运行 ArrayList 操作")
     void concurrentEvalWithJavaInterop() {
         int count = 50;
         var futures = new ArrayList<CompletableFuture<Object>>(count);
@@ -100,6 +106,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("脚本内 HttpClient GET 请求：调用本地 mock 返回 JSON")
     void httpCallViaJavaInterop() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/ping", exchange -> {
@@ -133,6 +140,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("并发 HTTP 调用：20 个虚拟线程同时请求 mock 接口")
     void concurrentHttpCalls() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/echo", exchange -> {
@@ -171,6 +179,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("HTTP GET 返回 JSON 字段：解析 url 字段")
     void httpGetThenReturnField() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/api/data", exchange -> {
@@ -202,6 +211,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("HTTP GET 带查询参数：返回 args 参数")
     void httpGetWithQueryThenReturnField() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/api/search", exchange -> {
@@ -235,6 +245,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("HTTP POST 提交 JSON：返回 received.title")
     void httpPostThenReturnField() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/api/create", exchange -> {
@@ -273,6 +284,7 @@ class NashornSandboxFactoryTest {
     }
 
     @Test
+    @DisplayName("HTTP GET 返回状态码：验证 418")
     void httpGetAndReturnStatusCode() throws Exception {
         var server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/api/teapot", exchange -> {

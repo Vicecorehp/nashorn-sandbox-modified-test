@@ -2,6 +2,7 @@ package lake.moon.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lake.moon.web.AppConfig;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ class ScriptControllerTest {
     }
 
     @Test
+    @DisplayName("脚本执行成功：POST Math.sqrt(625) 返回 200")
     void successfulExecution() throws Exception {
         var resp = postScript("Java.type('java.lang.Math').sqrt(625)");
 
@@ -52,6 +54,7 @@ class ScriptControllerTest {
     }
 
     @Test
+    @DisplayName("白名单拦截：POST 禁止类返回 403")
     void whitelistBlocked() throws Exception {
         var resp = postScript("Java.type('java.io.File')");
 
@@ -62,6 +65,7 @@ class ScriptControllerTest {
     }
 
     @Test
+    @DisplayName("脚本语法错误：POST 未定义变量返回 400")
     void scriptError() throws Exception {
         var resp = postScript("undefinedVar + 1");
 
@@ -72,6 +76,7 @@ class ScriptControllerTest {
     }
 
     @Test
+    @DisplayName("并发请求：50 个虚拟线程同时调用接口")
     void concurrentRequests() throws Exception {
         int count = 50;
         var futures = new ArrayList<CompletableFuture<HttpResponse<String>>>(count);

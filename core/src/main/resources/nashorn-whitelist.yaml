@@ -1,0 +1,41 @@
+classes:
+  - java.lang.String
+  - java.lang.Math
+  - java.lang.System
+  - java.lang.Boolean
+  - java.lang.Number
+  - java.lang.Integer
+  - java.lang.Long
+  - java.lang.Double
+  - java.lang.Float
+  - java.lang.Object
+  - java.lang.Void
+  - java.lang.StringBuilder
+  - java.lang.StringBuffer
+  - java.util.ArrayList
+  - java.util.HashMap
+  - java.util.HashSet
+  - java.util.LinkedHashMap
+  - java.util.LinkedHashSet
+  - java.util.List
+  - java.util.Map
+  - java.util.Set
+  - java.util.Optional
+  - java.util.UUID
+  - java.net.URI
+  - java.net.URL
+  - java.net.http.HttpClient
+  - java.net.http.HttpRequest
+  - java.net.http.HttpResponse
+  - java.time.LocalDate
+  - java.time.LocalDateTime
+  - java.time.LocalTime
+  - java.time.ZonedDateTime
+  - java.time.Instant
+  - java.time.format.DateTimeFormatter
+
+packages:
+  - java.lang
+  - java.util
+  - java.time
+  - java.math

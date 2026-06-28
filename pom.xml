@@ -7,6 +7,12 @@
     <groupId>org.example</groupId>
     <artifactId>jdk-25-feature</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>core</module>
+        <module>web</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -14,66 +20,104 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <graalvm.version>24.2.1</graalvm.version>
         <junit.version>5.14.4</junit.version>
-        <nashorn.version>0.5.1</nashorn.version>
+        <nashorn-sandbox.version>0.5.1</nashorn-sandbox.version>
         <slf4j.version>2.0.16</slf4j.version>
         <logback.version>1.5.18</logback.version>
         <surefire.version>3.2.5</surefire.version>
+        <nashorn-core.version>15.7</nashorn-core.version>
+        <snakeyaml.version>2.6</snakeyaml.version>
+        <spring-boot.version>3.4.5</spring-boot.version>
     </properties>
 
-    <dependencies>
-        <!-- JUnit 5 -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal modules -->
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <!-- delight-nashorn-sandbox (bundles Nashorn) -->
-        <dependency>
-            <groupId>org.javadelight</groupId>
-            <artifactId>delight-nashorn-sandbox</artifactId>
-            <version>${nashorn.version}</version>
-            <scope>test</scope>
-        </dependency>
+            <!-- JUnit 5 -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-        <!-- SLF4J + Logback -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
+            <!-- delight-nashorn-sandbox -->
+            <dependency>
+                <groupId>org.javadelight</groupId>
+                <artifactId>delight-nashorn-sandbox</artifactId>
+                <version>${nashorn-sandbox.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-        <!-- GraalVM JavaScript (Polyglot API) -->
-        <dependency>
-            <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>polyglot</artifactId>
-            <version>${graalvm.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>js-community</artifactId>
-            <version>${graalvm.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+            <!-- SLF4J + Logback -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- GraalVM JavaScript -->
+            <dependency>
+                <groupId>org.graalvm.polyglot</groupId>
+                <artifactId>polyglot</artifactId>
+                <version>${graalvm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.polyglot</groupId>
+                <artifactId>js-community</artifactId>
+                <version>${graalvm.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Nashorn standalone -->
+            <dependency>
+                <groupId>org.openjdk.nashorn</groupId>
+                <artifactId>nashorn-core</artifactId>
+                <version>${nashorn-core.version}</version>
+            </dependency>
+
+            <!-- SnakeYAML -->
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <!-- Spring Boot BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
 </project>

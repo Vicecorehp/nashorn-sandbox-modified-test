@@ -1,6 +1,5 @@
 package lake.moon.web.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lake.moon.web.AppConfig;
 import org.junit.jupiter.api.Test;

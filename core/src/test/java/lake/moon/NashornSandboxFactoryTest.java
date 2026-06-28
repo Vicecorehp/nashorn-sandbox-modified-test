@@ -169,4 +169,86 @@ class NashornSandboxFactoryTest {
             server.stop(0);
         }
     }
+
+    @Test
+    void httpGetThenReturnField() throws Exception {
+        var script = """
+                var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                var uri = Java.type('java.net.URI').create('http://httpbin.org/get');
+                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                var response = client.send(request, handler);
+                var json = JSON.parse(response.body());
+                json.url;
+                """;
+
+        var future = factory.evalAsync(script);
+        var result = future.get();
+
+        assertTrue(result.toString().contains("httpbin.org/get"));
+        log.info("[SandboxFactory] httpbin.org/get returned url: {}", result);
+    }
+
+    @Test
+    void httpGetWithQueryThenReturnField() throws Exception {
+        var script = """
+                var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                var uri = Java.type('java.net.URI').create('http://httpbin.org/get?name=opencode&version=1');
+                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                var response = client.send(request, handler);
+                var json = JSON.parse(response.body());
+                JSON.stringify(json.args);
+                """;
+
+        var future = factory.evalAsync(script);
+        var result = future.get();
+
+        assertTrue(result.toString().contains("opencode"));
+        assertTrue(result.toString().contains("1"));
+        log.info("[SandboxFactory] httpbin.org/get?name=opencode&version=1 returned args: {}", result);
+    }
+
+    @Test
+    void httpPostThenReturnField() throws Exception {
+        var script = """
+                var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                var uri = Java.type('java.net.URI').create('http://httpbin.org/post');
+                var body = JSON.stringify({title: 'hello', body: 'world'});
+                var request = Java.type('java.net.http.HttpRequest')
+                    .newBuilder()
+                    .uri(uri)
+                    .header('Content-Type', 'application/json')
+                    .POST(Java.type('java.net.http.HttpRequest.BodyPublishers').ofString(body))
+                    .build();
+                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                var response = client.send(request, handler);
+                var json = JSON.parse(response.body());
+                json.json.title;
+                """;
+
+        var future = factory.evalAsync(script);
+        var result = future.get();
+
+        assertEquals("hello", result);
+        log.info("[SandboxFactory] httpbin.org/post returned json.title: {}", result);
+    }
+
+    @Test
+    void httpGetAndReturnStatusCode() throws Exception {
+        var script = """
+                var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                var uri = Java.type('java.net.URI').create('http://httpbin.org/status/418');
+                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                var response = client.send(request, handler);
+                response.statusCode();
+                """;
+
+        var future = factory.evalAsync(script);
+        var result = future.get();
+
+        assertEquals(418, ((Number) result).intValue());
+        log.info("[SandboxFactory] httpbin.org/status/418 returned status: {}", result);
+    }
 }

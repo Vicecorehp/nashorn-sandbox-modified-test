@@ -3,10 +3,14 @@ package lake.moon;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GraalVMPerformanceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(GraalVMPerformanceTest.class);
 
     @Test
     void fib35() {
@@ -20,7 +24,7 @@ class GraalVMPerformanceTest {
             Value result = context.eval("js", script);
             long elapsed = System.nanoTime() - start;
 
-            System.out.println("[GraalVM] Fibonacci(35) = " + result + " | " + (elapsed / 1_000_000) + " ms");
+            log.info("[GraalVM] Fibonacci(35) = {} | {} ms", result, elapsed / 1_000_000);
             assertEquals(9227465, result.asLong());
         }
     }
@@ -40,7 +44,7 @@ class GraalVMPerformanceTest {
             Value result = context.eval("js", script);
             long elapsed = System.nanoTime() - start;
 
-            System.out.println("[GraalVM] Float loop 1M = " + result + " | " + (elapsed / 1_000_000) + " ms");
+            log.info("[GraalVM] Float loop 1M = {} | {} ms", result, elapsed / 1_000_000);
             assertEquals(1.181634514966106E9, result.asDouble(), 1000);
         }
     }

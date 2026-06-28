@@ -3,10 +3,14 @@ package lake.moon;
 import delight.nashornsandbox.NashornSandbox;
 import delight.nashornsandbox.NashornSandboxes;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NashornPerformanceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(NashornPerformanceTest.class);
 
     @Test
     void fib35() throws Exception {
@@ -21,7 +25,7 @@ class NashornPerformanceTest {
         Object result = sandbox.eval(script);
         long elapsed = System.nanoTime() - start;
 
-        System.out.println("[Nashorn] Fibonacci(35) = " + result + " | " + (elapsed / 1_000_000) + " ms");
+        log.info("[Nashorn] Fibonacci(35) = {} | {} ms", result, elapsed / 1_000_000);
         assertEquals(9227465, ((Number) result).longValue());
     }
 
@@ -41,7 +45,7 @@ class NashornPerformanceTest {
         Object result = sandbox.eval(script);
         long elapsed = System.nanoTime() - start;
 
-        System.out.println("[Nashorn] Float loop 1M = " + result + " | " + (elapsed / 1_000_000) + " ms");
+        log.info("[Nashorn] Float loop 1M = {} | {} ms", result, elapsed / 1_000_000);
         assertEquals(1.181634514966106E9, ((Number) result).doubleValue(), 1000);
     }
 }

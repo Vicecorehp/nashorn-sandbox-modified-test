@@ -172,83 +172,130 @@ class NashornSandboxFactoryTest {
 
     @Test
     void httpGetThenReturnField() throws Exception {
-        var script = """
-                var client = Java.type('java.net.http.HttpClient').newHttpClient();
-                var uri = Java.type('java.net.URI').create('http://httpbin.org/get');
-                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
-                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
-                var response = client.send(request, handler);
-                var json = JSON.parse(response.body());
-                json.url;
-                """;
+        var server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/api/data", exchange -> {
+            var body = "{\"url\":\"/api/data\",\"method\":\"GET\"}".getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            int port = server.getAddress().getPort();
+            var script = """
+                    var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                    var uri = Java.type('java.net.URI').create('http://localhost:%d/api/data');
+                    var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                    var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                    var response = client.send(request, handler);
+                    var json = JSON.parse(response.body());
+                    json.url;
+                    """.formatted(port);
 
-        var future = factory.evalAsync(script);
-        var result = future.get();
-
-        assertTrue(result.toString().contains("httpbin.org/get"));
-        log.info("[SandboxFactory] httpbin.org/get returned url: {}", result);
+            var result = factory.evalAsync(script).get();
+            assertEquals("/api/data", result);
+            log.info("[SandboxFactory] GET /api/data returned url: {}", result);
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
     void httpGetWithQueryThenReturnField() throws Exception {
-        var script = """
-                var client = Java.type('java.net.http.HttpClient').newHttpClient();
-                var uri = Java.type('java.net.URI').create('http://httpbin.org/get?name=opencode&version=1');
-                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
-                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
-                var response = client.send(request, handler);
-                var json = JSON.parse(response.body());
-                JSON.stringify(json.args);
-                """;
+        var server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/api/search", exchange -> {
+            var query = exchange.getRequestURI().getQuery();
+            var body = ("{\"args\":\"" + query + "\"}").getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            int port = server.getAddress().getPort();
+            var script = """
+                    var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                    var uri = Java.type('java.net.URI').create('http://localhost:%d/api/search?name=opencode&version=1');
+                    var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                    var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                    var response = client.send(request, handler);
+                    var json = JSON.parse(response.body());
+                    json.args;
+                    """.formatted(port);
 
-        var future = factory.evalAsync(script);
-        var result = future.get();
-
-        assertTrue(result.toString().contains("opencode"));
-        assertTrue(result.toString().contains("1"));
-        log.info("[SandboxFactory] httpbin.org/get?name=opencode&version=1 returned args: {}", result);
+            var result = factory.evalAsync(script).get();
+            assertTrue(result.toString().contains("name=opencode"));
+            assertTrue(result.toString().contains("version=1"));
+            log.info("[SandboxFactory] GET /api/search?name=opencode&version=1 returned args: {}", result);
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
     void httpPostThenReturnField() throws Exception {
-        var script = """
-                var client = Java.type('java.net.http.HttpClient').newHttpClient();
-                var uri = Java.type('java.net.URI').create('http://httpbin.org/post');
-                var body = JSON.stringify({title: 'hello', body: 'world'});
-                var request = Java.type('java.net.http.HttpRequest')
-                    .newBuilder()
-                    .uri(uri)
-                    .header('Content-Type', 'application/json')
-                    .POST(Java.type('java.net.http.HttpRequest.BodyPublishers').ofString(body))
-                    .build();
-                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
-                var response = client.send(request, handler);
-                var json = JSON.parse(response.body());
-                json.json.title;
-                """;
+        var server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/api/create", exchange -> {
+            var reqBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            var resp = ("{\"received\":" + reqBody + "}").getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, resp.length);
+            exchange.getResponseBody().write(resp);
+            exchange.close();
+        });
+        server.start();
+        try {
+            int port = server.getAddress().getPort();
+            var script = """
+                    var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                    var uri = Java.type('java.net.URI').create('http://localhost:%d/api/create');
+                    var body = JSON.stringify({title: 'hello', body: 'world'});
+                    var request = Java.type('java.net.http.HttpRequest')
+                        .newBuilder()
+                        .uri(uri)
+                        .header('Content-Type', 'application/json')
+                        .POST(Java.type('java.net.http.HttpRequest.BodyPublishers').ofString(body))
+                        .build();
+                    var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                    var response = client.send(request, handler);
+                    var json = JSON.parse(response.body());
+                    json.received.title;
+                    """.formatted(port);
 
-        var future = factory.evalAsync(script);
-        var result = future.get();
-
-        assertEquals("hello", result);
-        log.info("[SandboxFactory] httpbin.org/post returned json.title: {}", result);
+            var result = factory.evalAsync(script).get();
+            assertEquals("hello", result);
+            log.info("[SandboxFactory] POST /api/create returned received.title: {}", result);
+        } finally {
+            server.stop(0);
+        }
     }
 
     @Test
     void httpGetAndReturnStatusCode() throws Exception {
-        var script = """
-                var client = Java.type('java.net.http.HttpClient').newHttpClient();
-                var uri = Java.type('java.net.URI').create('http://httpbin.org/status/418');
-                var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
-                var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
-                var response = client.send(request, handler);
-                response.statusCode();
-                """;
+        var server = HttpServer.create(new InetSocketAddress(0), 0);
+        server.createContext("/api/teapot", exchange -> {
+            exchange.sendResponseHeaders(418, -1);
+            exchange.close();
+        });
+        server.start();
+        try {
+            int port = server.getAddress().getPort();
+            var script = """
+                    var client = Java.type('java.net.http.HttpClient').newHttpClient();
+                    var uri = Java.type('java.net.URI').create('http://localhost:%d/api/teapot');
+                    var request = Java.type('java.net.http.HttpRequest').newBuilder().uri(uri).GET().build();
+                    var handler = Java.type('java.net.http.HttpResponse.BodyHandlers').ofString();
+                    var response = client.send(request, handler);
+                    response.statusCode();
+                    """.formatted(port);
 
-        var future = factory.evalAsync(script);
-        var result = future.get();
-
-        assertEquals(418, ((Number) result).intValue());
-        log.info("[SandboxFactory] httpbin.org/status/418 returned status: {}", result);
+            var result = factory.evalAsync(script).get();
+            assertEquals(418, ((Number) result).intValue());
+            log.info("[SandboxFactory] GET /api/teapot returned status: {}", result);
+        } finally {
+            server.stop(0);
+        }
     }
 }

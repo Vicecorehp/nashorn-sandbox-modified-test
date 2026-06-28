@@ -3,6 +3,7 @@ package lake.moon.web.controller;
 import lake.moon.NashornSandboxFactory;
 import lake.moon.web.dto.ScriptRequest;
 import lake.moon.web.dto.ScriptResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,22 +23,31 @@ public class ScriptController {
     }
 
     @PostMapping("/execute")
-    public ScriptResponse execute(@RequestBody ScriptRequest request) {
+    public ResponseEntity<ScriptResponse> execute(@RequestBody ScriptRequest request) {
         long start = System.nanoTime();
         try {
             Object result = factory.evalAsync(request.script()).join();
-            return ScriptResponse.success(result, (System.nanoTime() - start) / 1_000_000);
+            var resp = ScriptResponse.success(result, (System.nanoTime() - start) / 1_000_000);
+            return ResponseEntity.ok(resp);
         } catch (CompletionException e) {
             long elapsed = (System.nanoTime() - start) / 1_000_000;
             var cause = e.getCause();
             if (cause instanceof ScriptException se) {
                 var msg = se.getMessage();
-                if (msg != null && msg.contains("not accessible")) {
-                    return ScriptResponse.error(403, msg, elapsed);
-                }
-                return ScriptResponse.error(400, msg, elapsed);
+                return ResponseEntity.badRequest()
+                        .body(ScriptResponse.error(400, msg, elapsed));
             }
-            return ScriptResponse.error(500, cause != null ? cause.getMessage() : "Unknown error", elapsed);
+            var msg = cause != null ? cause.getMessage() : "Unknown error";
+            if (msg != null && msg.contains("not accessible")) {
+                return ResponseEntity.status(403)
+                        .body(ScriptResponse.error(403, msg, elapsed));
+            }
+            if (msg != null && msg.contains("ClassNotFoundException")) {
+                return ResponseEntity.status(403)
+                        .body(ScriptResponse.error(403, msg, elapsed));
+            }
+            return ResponseEntity.badRequest()
+                    .body(ScriptResponse.error(400, msg, elapsed));
         }
     }
 }

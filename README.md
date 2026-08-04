@@ -1,6 +1,6 @@
 # jdk-25-feature
 
-JDK 25 特性演示项目，提供 JavaScript 沙箱执行引擎（Nashorn）及 Spring Boot Web 接口。
+JDK 21 特性演示项目，提供 JavaScript 沙箱执行引擎（Nashorn）及 Spring Boot Web 接口。
 
 ## 项目结构
 
@@ -22,7 +22,7 @@ jdk-25-feature/
 └── web/                 ← Web 模块：Spring Boot REST API
     ├── pom.xml
     ├── src/main/java/
-    │   ├── Application.java            ← JDK 25 隐式类入口
+    │   ├── Application.java            ← Spring Boot 启动类
     │   └── lake/moon/web/
     │       ├── AppConfig.java           ← Spring Boot 配置
     │       ├── controller/ScriptController.java
@@ -135,7 +135,7 @@ packages:
 
 ### 性能对比
 
-#### 引擎对比（Temurin JDK 25, 无 GraalVM JIT）
+#### 引擎对比（Temurin JDK 21, 无 GraalVM JIT）
 
 | Benchmark | Nashorn | GraalVM JS (解释模式) |
 |---|---|---|

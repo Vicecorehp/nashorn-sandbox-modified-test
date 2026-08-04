@@ -1,6 +1,5 @@
 package lake.moon;
 
-import org.openjdk.nashorn.api.scripting.ClassFilter;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import javax.script.Compilable;
@@ -45,7 +44,7 @@ public class NashornSandboxFactory implements AutoCloseable {
     }
 
     public ScriptEngine createEngine() {
-        return engineFactory.getScriptEngine(className -> whitelist.isClassAllowed(className));
+        return engineFactory.getScriptEngine(whitelist::isClassAllowed);
     }
 
     public CompletableFuture<Object> evalAsync(String script) {
